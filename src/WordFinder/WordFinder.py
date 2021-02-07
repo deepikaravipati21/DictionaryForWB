@@ -12,7 +12,7 @@ class WordFinder(object):
         self._anagram_finder = anagram_finder
 
     def get_words(self, letters_string):
-        words = set()s
+        words = set()
         for combination in _get_combinations(letters_string):
             words.update(self._anagram_finder.get_anagrams(combination))
         return sorted(words, key=lambda word: (-len(word), word))

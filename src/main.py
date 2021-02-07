@@ -1,5 +1,6 @@
 from src.AnagramFinder.AnagramFinder import AnagramFinder
 from src.WordFinder.WordFinder import WordFinder
+from PyDictionary import PyDictionary
 import json
 
 dictionaryFile = '../assets/twl06.txt'
@@ -27,7 +28,7 @@ def getRootWordList(lowerCharLimit, higherCharLimit):
         for listitem in mediumWords:
             filehandle.write('%s\n' % listitem)
 
-def formDictionary(wordList, word_finder):
+def formDictionary(wordList, word_finder, dict_builder):
     count = 0
     mWords = []
     print("Total number of words is %d" % len(wordList))
@@ -43,12 +44,23 @@ def formDictionary(wordList, word_finder):
         mChildWordBreakDownDictionary = {lengthWords[str(len(rWord))] : [] for rWord in getData if len(rWord) >= 3}
         for word in getData:
             if len(word) > 2:
-                mChildWordBreakDownDictionary[lengthWords[str(len(word))]].append(word)
+                dict_word = {}
+                dict_meaning = dict_builder.meaning(word, disable_errors=True)
+                if dict_meaning is not None:
+                    dict_word[word] = dict_meaning
+                else:
+                    dict_word[word] = {'None' : "Couldn't fetch meaning"}
+                mChildWordBreakDownDictionary[lengthWords[str(len(word))]].append(dict_word)
+
         mWords_each["mChildWordBreakDownDictionary"] = mChildWordBreakDownDictionary
         mWords_each["mChildWordCount"] = len(getData)
         mWords_each["mRootWord"] = rWord
         mWords.append(mWords_each)
         count += 1
+        print(count)
+       # print(mChildWordBreakDownDictionary)
+        if(count % 10 == 0):
+            print(count)
 
     dictionary = dict.fromkeys(["mTotalNumberOfWords", "mWords"])
     dictionary["mTotalNumberOfWords"] = count
@@ -57,10 +69,11 @@ def formDictionary(wordList, word_finder):
 
 if __name__ == "__main__":
     wordFinder = WordFinder(AnagramFinder(_get_words(dictionaryFile)))
+    dict_builder = PyDictionary()
     wordList = _get_words(wordsFile)
-    dictionary = formDictionary(wordList, wordFinder)
+    dictionary = formDictionary(wordList, wordFinder, dict_builder)
     with open(resultDictionary, "w") as outfile:
         json.dump(dictionary, outfile)
 
-    #getRootWordList(6, 8) # uncomment this line if we want to generate root ord list of desired length
+    #getRootWordList(6, 8) # uncomment this line if we want to generate root words list of desired length
 
