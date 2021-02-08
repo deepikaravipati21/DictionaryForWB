@@ -57,10 +57,8 @@ def formDictionary(wordList, word_finder, dict_builder):
         mWords_each["mRootWord"] = rWord
         mWords.append(mWords_each)
         count += 1
-        print(count)
+
        # print(mChildWordBreakDownDictionary)
-        if(count % 10 == 0):
-            print(count)
 
     dictionary = dict.fromkeys(["mTotalNumberOfWords", "mWords"])
     dictionary["mTotalNumberOfWords"] = count
